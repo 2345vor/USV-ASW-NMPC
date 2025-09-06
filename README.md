@@ -42,108 +42,30 @@ pip install numpy scipy pandas matplotlib casadi control
 
 ## 📁 Project Structure
 
+The directory structure of this project is carefully designed to ensure modularity and maintainability. Below is a detailed description of the main files and directories:
+
 ```
 MI/
-├── .codebuddy/
-│   └── rules/
-├── .vs/
-│   ├── MI/
-│   │   ├── FileContentIndex/
-│   │   └── v17/
-│   ├── ProjectSettings.json
-│   ├── VSWorkspaceState.json
-│   └── slnx.sqlite
-├── .vscode/
-│   ├── launch.json
-│   └── settings.json
-├── README_CN.md
-├── __pycache__/
-│   ├── config.cpython-38.pyc
-│   ├── dynamics_model_interface.cpython-38.pyc
-│   └── model_interface.cpython-38.pyc
-├── config.py
-├── datas/
-│   ├── boat1_2_circle.xlsx
-│   └── boat1_2_sin.xlsx
-├── examples/
-│   ├── demo.py
-│   ├── demo2.py
-│   └── demo3.py
-├── model_identifier.py
-├── model_results/
-│   ├── model_1_identification_metadata.json
-│   ├── model_1_identification_results.csv
-│   ├── model_1_identification_results.png
-│   ├── model_1_params.json
-│   ├── model_1_performance_analysis.png
-│   ├── model_1_results.csv
-│   ├── model_1_results_metadata.json
-│   ├── model_2_identification_metadata.json
-│   ├── model_2_identification_results.csv
-│   ├── model_2_identification_results.png
-│   ├── model_2_params.json
-│   ├── model_2_performance_analysis.png
-│   ├── model_2_results.csv
-│   ├── model_2_results_metadata.json
-│   ├── model_3_identification_metadata.json
-│   ├── model_3_identification_results.csv
-│   ├── model_3_identification_results.png
-│   ├── model_3_params.json
-│   ├── model_3_performance_analysis.png
-│   ├── model_3_results.csv
-│   └── model_3_results_metadata.json
-├── nmpc_identified_model_results.csv
-├── nmpc_performance_report.txt
-├── nmpc_results/
-│   ├── nmpc_error_1_for_trajectory_1.png
-│   ├── nmpc_error_2_for_trajectory_2.png
-│   ├── nmpc_error_3_for_trajectory_3.png
-│   ├── nmpc_identified_model_1_for_trajectory_1_results.csv
-│   ├── nmpc_identified_model_2_for_trajectory_2_results.csv
-│   ├── nmpc_identified_model_3_for_trajectory_3_results.csv
-│   ├── nmpc_performance_model_1_for_trajectory_1_report.txt
-│   ├── nmpc_performance_model_2_for_trajectory_2_report.txt
-│   ├── nmpc_performance_model_3_for_trajectory_3_report.txt
-│   ├── nmpc_state_variables_1_for_trajectory_1.png
-│   ├── nmpc_state_variables_2_for_trajectory_2.png
-│   ├── nmpc_state_variables_3_for_trajectory_3.png
-│   ├── nmpc_thruster_outputs_1_for_trajectory_1.png
-│   ├── nmpc_thruster_outputs_2_for_trajectory_2.png
-│   ├── nmpc_thruster_outputs_3_for_trajectory_3.png
-│   ├── nmpc_trajectory_1_for_trajectory_1.png
-│   ├── nmpc_trajectory_2_for_trajectory_2.png
-│   └── nmpc_trajectory_3_for_trajectory_3.png
-├── nmpc_tracking/
-│   ├── boat1_2_atwnmpc.py
-│   └── identified_model_nmpc_test.py
-└── src/
-    ├── data_processing/
-    │   ├── __init__.py
-    │   ├── __pycache__/
-    │   ├── data_loader.py
-    │   └── data_preprocessor.py
-    ├── model_identification/
-    │   ├── __init__.py
-    │   ├── __pycache__/
-    │   ├── model_equations.py
-    │   └── parameter_optimizer.py
-    ├── simulation_visualization/
-    │   ├── __init__.py
-    │   ├── __pycache__/
-    │   ├── simulator.py
-    │   └── visualizer.py
-    └── utils/
-        ├── __init__.py
-        ├── __pycache__/
-        ├── data_format.py
-        ├── data_validator.py
-        └── simplified_visualizer.py
+├── datas/                     # Stores experimental data (e.g., .xlsx files)
+├── examples/                  # Provides example scripts on how to use this project
+├── model_results/             # Stores the results of model identification (parameters, charts, data)
+├── nmpc_results/              # Stores the simulation results of NMPC trajectory tracking
+├── nmpc_tracking/             # Contains code related to NMPC trajectory tracking control
+│   └── identified_model_nmpc_test.py # Used to test and validate the NMPC tracking performance of the identified model
+├── src/                       # Contains the core source code of the project
+│   ├── data_processing/       # Data processing module (loading, preprocessing)
+│   ├── model_identification/  # Core logic for model identification (model equations, optimizer)
+│   ├── simulation_visualization/ # Simulation and visualization module
+│   └── utils/                 # General utilities (data formatting, validation, visualization)
+├── model_identifier.py        # Main script for model parameter identification
+├── config.py                  # Global configuration file for the project
+├── README.md                  # English documentation for the project
+└── README_CN.md               # Chinese documentation for the project
 ```
 
 ## 🚀 Quick Start
 
-### Requirements
-
+### Prerequisites
 - Python 3.8+
 - Dependencies: numpy, scipy, pandas, matplotlib, casadi, control
 
@@ -230,7 +152,7 @@ python model_identifier.py --interactive
 | `--interactive` | flag | False | Enable interactive mode |
 | `--start_row` | int | 0 | Starting row of data |
 | `--row_count` | int | 1500 | Number of data rows to read |
-| `--output_dir` | str | . | Output file directory |
+| `--output_dir` | str | ./model_results/ | Output file directory |
 
 ### Filtering Method Description
 

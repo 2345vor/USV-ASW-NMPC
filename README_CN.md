@@ -42,102 +42,25 @@ pip install numpy scipy pandas matplotlib casadi control
 
 ## 📁 项目结构
 
+本项目的目录结构经过精心设计，以确保代码的模块化和可维护性。以下是主要文件和目录的详细说明：
+
 ```
 MI/
-├── .codebuddy/
-│   └── rules/
-├── .vs/
-│   ├── MI/
-│   │   ├── FileContentIndex/
-│   │   └── v17/
-│   ├── ProjectSettings.json
-│   ├── VSWorkspaceState.json
-│   └── slnx.sqlite
-├── .vscode/
-│   ├── launch.json
-│   └── settings.json
-├── README_CN.md
-├── __pycache__/
-│   ├── config.cpython-38.pyc
-│   ├── dynamics_model_interface.cpython-38.pyc
-│   └── model_interface.cpython-38.pyc
-├── config.py
-├── datas/
-│   ├── boat1_2_circle.xlsx
-│   └── boat1_2_sin.xlsx
-├── examples/
-│   ├── demo.py
-│   ├── demo2.py
-│   └── demo3.py
-├── model_identifier.py
-├── model_results/
-│   ├── model_1_identification_metadata.json
-│   ├── model_1_identification_results.csv
-│   ├── model_1_identification_results.png
-│   ├── model_1_params.json
-│   ├── model_1_performance_analysis.png
-│   ├── model_1_results.csv
-│   ├── model_1_results_metadata.json
-│   ├── model_2_identification_metadata.json
-│   ├── model_2_identification_results.csv
-│   ├── model_2_identification_results.png
-│   ├── model_2_params.json
-│   ├── model_2_performance_analysis.png
-│   ├── model_2_results.csv
-│   ├── model_2_results_metadata.json
-│   ├── model_3_identification_metadata.json
-│   ├── model_3_identification_results.csv
-│   ├── model_3_identification_results.png
-│   ├── model_3_params.json
-│   ├── model_3_performance_analysis.png
-│   ├── model_3_results.csv
-│   └── model_3_results_metadata.json
-├── nmpc_identified_model_results.csv
-├── nmpc_performance_report.txt
-├── nmpc_results/
-│   ├── nmpc_error_1_for_trajectory_1.png
-│   ├── nmpc_error_2_for_trajectory_2.png
-│   ├── nmpc_error_3_for_trajectory_3.png
-│   ├── nmpc_identified_model_1_for_trajectory_1_results.csv
-│   ├── nmpc_identified_model_2_for_trajectory_2_results.csv
-│   ├── nmpc_identified_model_3_for_trajectory_3_results.csv
-│   ├── nmpc_performance_model_1_for_trajectory_1_report.txt
-│   ├── nmpc_performance_model_2_for_trajectory_2_report.txt
-│   ├── nmpc_performance_model_3_for_trajectory_3_report.txt
-│   ├── nmpc_state_variables_1_for_trajectory_1.png
-│   ├── nmpc_state_variables_2_for_trajectory_2.png
-│   ├── nmpc_state_variables_3_for_trajectory_3.png
-│   ├── nmpc_thruster_outputs_1_for_trajectory_1.png
-│   ├── nmpc_thruster_outputs_2_for_trajectory_2.png
-│   ├── nmpc_thruster_outputs_3_for_trajectory_3.png
-│   ├── nmpc_trajectory_1_for_trajectory_1.png
-│   ├── nmpc_trajectory_2_for_trajectory_2.png
-│   └── nmpc_trajectory_3_for_trajectory_3.png
-├── nmpc_tracking/
-│   ├── boat1_2_atwnmpc.py
-│   └── identified_model_nmpc_test.py
-└── src/
-    ├── data_processing/
-    │   ├── __init__.py
-    │   ├── __pycache__/
-    │   ├── data_loader.py
-    │   └── data_preprocessor.py
-    ├── model_identification/
-    │   ├── __init__.py
-    │   ├── __pycache__/
-    │   ├── model_equations.py
-    │   └── parameter_optimizer.py
-    ├── simulation_visualization/
-    │   ├── __init__.py
-    │   ├── __pycache__/
-    │   ├── simulator.py
-    │   └── visualizer.py
-    └── utils/
-        ├── __init__.py
-        ├── __pycache__/
-        ├── data_format.py
-        ├── data_validator.py
-        └── simplified_visualizer.py
+├── datas/                     # 存放实验数据 (如 .xlsx 文件)
+├── examples/                  # 提供如何使用本项目的示例脚本
+├── model_results/             # 存储模型辨识的结果 (参数, 图表, 数据)
+├── nmpc_results/              # 存储NMPC轨迹跟踪的仿真结果
+├── nmpc_tracking/             # 包含NMPC轨迹跟踪控制的相关代码
+│   └── identified_model_nmpc_test.py # 用于测试和验证已辨识模型的NMPC跟踪性能
+├── src/                       # 存放项目的核心源代码
+│   ├── data_processing/       # 数据处理模块 (加载、预处理)
+│   ├── model_identification/  # 模型辨识的核心逻辑 (模型方程, 优化器)
+│   ├── simulation_visualization/ # 仿真与可视化模块
+│   └── utils/                 # 通用工具 (数据格式化, 验证, 可视化)
+├── model_identifier.py        # 模型参数辨识的主脚本
+├── config.py                  # 项目的全局配置文件
+├── README.md                  # 项目的英文说明文档
+└── README_CN.md               # 项目的中文说明文档
 ```
 
 ## 🚀 快速开始
@@ -230,7 +153,7 @@ python model_identifier.py --interactive
 | `--interactive` | flag | False | 启用交互式模式 |
 | `--start_row` | int | 0 | 数据起始行 |
 | `--row_count` | int | 1500 | 读取数据行数 |
-| `--output_dir` | str | . | 输出文件目录 |
+| `--output_dir` | str | ./model_results/ | 输出文件目录 |
 
 ### 滤波方法说明
 
