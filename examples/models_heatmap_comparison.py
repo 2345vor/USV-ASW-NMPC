@@ -371,11 +371,11 @@ def main():
     
     # Plot comparison heatmap of three models
     print("\nPlotting comparison heatmap of three models...")
-    visualizer.plot_models_heatmap_comparison()
+    # visualizer.plot_models_heatmap_comparison()
     
     # You can also plot each model's heatmap individually
     # visualizer.plot_single_model_heatmap(model_type=1)
-    # visualizer.plot_single_model_heatmap(model_type=2)
+    visualizer.plot_single_model_heatmap(model_type=2)
     # visualizer.plot_single_model_heatmap(model_type=3)
 
 if __name__ == "__main__":

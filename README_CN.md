@@ -179,8 +179,19 @@ python model_identifier.py --interactive
 运行`example/model_tracking_comparison.py`进行对比分析。
 ![模型轨迹跟踪对比分析](model_results/model_tracking_comparison.png)
 运行`example/model_heatmap_comparison.py`进行对比分析。
-![模型参数对比分析](model_results/model_heatmap_comparison.png)
-
+![模型参数对比分析](model_results/models_heatmap_comparison.png)
+在代码378行取消注释，将显示模型2的参数辨识结果
+```python
+    # Plot comparison heatmap of three models
+    print("\nPlotting comparison heatmap of three models...")
+    # visualizer.plot_models_heatmap_comparison()
+    
+    # You can also plot each model's heatmap individually
+    # visualizer.plot_single_model_heatmap(model_type=1)
+    visualizer.plot_single_model_heatmap(model_type=2)
+    # visualizer.plot_single_model_heatmap(model_type=3)
+```
+![模型参数对比分析](model_results/model_2_params_heatmap.png)
 ### 工作流程
 
 参数辨识的完整工作流程包括：
