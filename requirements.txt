@@ -1,0 +1,21 @@
+# Core scientific computing
+numpy
+scipy
+pandas
+
+# Plotting and visualization
+matplotlib
+seaborn
+
+# Optimization / control
+casadi
+control
+
+# Excel file support for pandas
+openpyxl
+
+# Machine learning utilities
+scikit-learn
+
+# Optional: extended Kalman filter utilities (used if available)
+filterpy

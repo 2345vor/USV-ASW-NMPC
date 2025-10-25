@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.so
+*.egg-info/
+*.log
+
+# Virtual environments
+venv/
+.venv/
+.env/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.vs/
+
+
+
+# Ignore all example scripts and assets
+examples/boat1_2_aswnmpc1008.py
+examples/boat1_2_aswnmpc0927.py
+examples/demo.py
+examples/demo2.py
+examples/demo3.py
+# Archives
+*.zip
+*.tar
+*.tar.gz
+examples/boat1_2_atwnmpc0927.py
+examples/demo.py
+examples/demo.py
+examples/demo2.py
+examples/demo3.py

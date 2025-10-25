@@ -2,130 +2,145 @@
 
 [English](README.md) | [中文](README_CN.md)
 
-## 🚢 Project Overview
+## Project Overview
 
-This project is a complete ship dynamics modeling and nonlinear model predictive control (NMPC) system that supports three ship dynamics models of varying complexity. The system provides a complete workflow from data processing, model identification, and validation to NMPC control, with a unified data format and simplified visualization functions.
+This project provides a complete ship dynamics modeling and Nonlinear Model Predictive Control (NMPC) system, supporting three ship dynamics models of different complexity. It offers an end-to-end workflow from data processing and model identification to validation and NMPC control, with a unified data format and simplified visualization.
 
-## ✨ Main Features
+## Key Features
 
-- 🔧 **Three Ship Dynamics Models**: Supports ship modeling needs of different complexities.
-- 📊 **Unified Data Format**: Standardized data input and output formats.
-- 🎯 **NMPC Controller**: Advanced nonlinear model predictive control algorithm.
-- 📈 **Simplified Visualization**: Clear chart display of key parameters.
-- 🔄 **Modular Design**: Code structure that is easy to expand and maintain.
-- ⚙️ **Configuration Management**: Unified configuration file management system.
-- 🖥️ **Command Line Interface**: Supports batch processing and interactive operations.
-- 🔍 **Multiple Filtering Methods**: Savitzky-Golay, Extended Kalman Filter, etc.
+- Three ship dynamics models: support various modeling needs
+- Unified data format: standardized I/O format
+- NMPC controller: advanced nonlinear model predictive control
+- Simplified visualization: clear plots of key variables
+- Modular design: easy to extend and maintain
+- Configuration management: unified config system
+- Command-line interface: batch and interactive modes
+- Multiple filtering methods: Savitzky-Golay, Extended Kalman Filter, etc.
 
-## 🏗️ System Architecture
+## System Architecture
 
 ### Core Modules
 
-- **Unified Model Interface** (`model_interface.py`): Supports unified calls to the three models.
-- **Universal NMPC Controller** (`nmpc_tracking/universal_nmpc_controller.py`): Unified control interface.
-- **Data Format Standard** (`src/utils/data_format.py`): Standardized data processing.
-- **Simplified Visualization** (`src/utils/simplified_visualizer.py`): Visualization of key parameters.
-- **Configuration Management** (`config_manager.py`): Unified configuration management.
-- **Parameter Identification Tool** (`model_identifier.py`): Command-line parameter identification tool.
+- Unified Data Format (`src/utils/data_format.py`): standard data handling
+- Simplified Visualization (`src/utils/simplified_visualizer.py`): key charts
+- Parameter Identification Tool (`model_identifier.py`): CLI identification tool
+- Simulation and Visualization (`src/simulation_visualization/*`): simulation and plotting
 
 ### Three Ship Models
 
-1.  **Model 1**: Standard model, suitable for basic applications.
-2.  **Model 2**: Separate thruster input model, balancing accuracy and computational efficiency.
-3.  **Model 3**: Simplified model, suitable for fast calculation scenarios.
+1. Model 1: Standard model, suitable for basic applications
+2. Model 2: Separated thruster input model, balances accuracy and efficiency
+3. Model 3: Simplified model, suitable for fast computation scenarios
 
-## 🔧 Dependencies
+## Install Dependencies
 
 ```bash
-pip install numpy scipy pandas matplotlib casadi control
+pip install -r requirements.txt
 ```
 
-## 📁 Project Structure
+## Project Structure
 
-The directory structure of this project is carefully designed to ensure modularity and maintainability. Below is a detailed description of the main files and directories:
+The project directory is designed for modularity and maintainability. Main files and folders:
 
 ```
 MI/
-├── datas/                     # Stores experimental data (e.g., .xlsx files)
-├── examples/                  # Provides example scripts on how to use this project
-├── model_results/             # Stores the results of model identification (parameters, charts, data)
-├── nmpc_results/              # Stores the simulation results of NMPC trajectory tracking
-├── nmpc_tracking/             # Contains code related to NMPC trajectory tracking control
-│   └── identified_model_nmpc_test.py # Used to test and validate the NMPC tracking performance of the identified model
-├── src/                       # Contains the core source code of the project
-│   ├── data_processing/       # Data processing module (loading, preprocessing)
-│   ├── model_identification/  # Core logic for model identification (model equations, optimizer)
-│   ├── simulation_visualization/ # Simulation and visualization module
-│   └── utils/                 # General utilities (data formatting, validation, visualization)
-├── model_identifier.py        # Main script for model parameter identification
-├── config.py                  # Global configuration file for the project
-├── README.md                  # English documentation for the project
-└── README_CN.md               # Chinese documentation for the project
+├── datas/                     # Experiment data (.xlsx)
+├── examples/                  # Example scripts
+├── model_results/             # Model identification outputs (params, figures, data)
+├── nmpc_results/              # NMPC tracking simulation outputs
+├── src/                       # Core source code
+│   ├── data_processing/       # Data loading and preprocessing
+│   ├── model_identification/  # Model equations and optimizer
+│   ├── simulation_visualization/ # Simulation and visualization
+│   └── utils/                 # Utilities (formatting, validation, viz)
+├── model_identifier.py        # Main script for parameter identification
+├── identified_model_nmpc_test.py # NMPC tracking validation using identified models
+├── config.py                  # Global config
+├── README.md                  # English documentation
+└── README_CN.md               # Chinese documentation
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
-### Prerequisites
+### Environment Requirements
+
 - Python 3.8+
-- Dependencies: numpy, scipy, pandas, matplotlib, casadi, control
+- Dependencies: see `requirements.txt` (includes numpy, scipy, pandas, matplotlib, seaborn, casadi, control, openpyxl, scikit-learn, filterpy, etc.)
 
-### Installation
+### Install
 
 ```bash
-pip install numpy scipy pandas matplotlib casadi control
+pip install -r requirements.txt
 ```
 
-## 📊 Experimental Results and Analysis
+## Experimental Results and Analysis
 
 ### Model Identification Results
 
-The following are examples of the results after using the `model_identifier.py` tool for parameter identification.
+Below are example results after parameter identification using `model_identifier.py`.
 
-**Model 1 Identification Results**
-![Model 1 Identification Results](model_results/model_1_identification_results.png)
+Model 1 Identification Result
+![Model 1 Identification](model_results/model_1_trajectory_tracking_ned.png)
 
-**Model 1 Performance Analysis**
-![Model 1 Performance Analysis](model_results/model_1_performance_analysis.png)
+Model 1 Performance Analysis
+![Model 1 Performance](model_results/model_1_performance_metrics.png)
 
-### NMPC Trajectory Tracking Results
+### NMPC Tracking Results
 
-Using the identified model parameters, NMPC trajectory tracking control is performed through `identified_model_nmpc_test.py`.
+Using identified model parameters, run `identified_model_nmpc_test.py` for NMPC trajectory tracking control.
 
-**Trajectory Tracking Comparison (Model 1, Trajectory 1)**
-![Trajectory Tracking Comparison](nmpc_results/nmpc_trajectory_1_for_trajectory_1.png)
+#### New Parameter Passing and CLI Usage
 
-**Tracking Error (Model 1, Trajectory 1)**
-![Tracking Error](nmpc_results/nmpc_error_1_for_trajectory_1.png)
+- Parameter source: the script automatically scans `model_results/model_{1|2|3}_identification_metadata.json` and loads parameters from the JSON `parameters` field (compatible with `params` or a raw list).
+- Key arguments:
+  - `--model` select model type (1/2/3).
+  - `--trajectory` select tracking curve (1: ellipse, 2: sinusoidal line, 3: double-sine).
+  - `--predict_step` prediction horizon (5–20).
+  - `--dt` sampling time (0.05–0.5).
+  - `--cycle_time` trajectory period (recommended multiples of 3).
+  - `--loop_num` number of loops.
+  - `--noise_mean` and `--noise_std` trajectory noise settings.
+  - `--alpha` strength for adaptive NMPC.
+  - `--adaptive` enable adaptive control (toggle flag).
+  - `--output_dir` output directory.
 
-### Experimental Results Comparison
-
-The following table compares the tracking performance of the three models on different trajectories (using RMSE as an example).
-
-| Model | Trajectory | RMSE (x) | RMSE (y) | RMSE (psi) | Overall Evaluation |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Model 1** | Trajectory 1 (Ellipse) | 0.15 | 0.20 | 0.05 | Balanced performance, suitable for most scenarios |
-| **Model 2** | Trajectory 2 (Sine) | 0.12 | 0.18 | 0.04 | Higher accuracy, but slightly slower computation |
-| **Model 3** | Trajectory 3 (Double Sine) | 0.20 | 0.25 | 0.08 | Fastest computation, but slightly lower accuracy |
-
-### Performance Analysis
-
-- **Advantages**:
-    - **Model Diversity**: Provides three models of different complexity, which can be selected according to the requirements of accuracy and computational efficiency.
-    - **Control Performance**: The NMPC controller shows good tracking performance on different trajectories, and the error converges quickly.
-    - **Modularization**: The system is well-designed and easy to expand and replace different modules.
-
-- **Disadvantages**:
-    - **Parameter Sensitivity**: The performance of the NMPC controller is sensitive to parameters (such as prediction horizon, control weights), which requires careful tuning.
-    - **Real-time Challenge**: For complex models (such as Model 2), it is still challenging to achieve high-frequency real-time control on hardware with limited computing power.
-
-## 📖 Parameter Identification Tool User Guide
-
-### Basic Command Line Usage
-
-Run the parameter identification script, which supports multiple model types, data files, and filtering method selections:
+Example:
 
 ```bash
-# Basic usage (using default parameters)
+# Custom prediction horizon, sampling time and period, enable adaptive control
+python identified_model_nmpc_test.py --model 2 --trajectory 2 --predict_step 10 --dt 0.1 --cycle_time 210 --alpha 0.1 --adaptive
+```
+
+Note: Loaded parameters are internally restricted (values > 10 or < -10 are reduced to keep the fractional part). To change this rule, edit `load_identified_params` in `identified_model_nmpc_test.py`.
+
+### Effect Comparison
+
+Performance comparison of three models on different trajectories (RMSE as example):
+
+| Model | Trajectory | RMSE (x) | RMSE (y) | RMSE (psi) | Summary |
+| :---- | :--------- | :------- | :------- | :--------- | :------ |
+| Model 1 | Traj 1 (Ellipse) | 0.15 | 0.20 | 0.05 | Balanced performance, general-purpose |
+| Model 2 | Traj 2 (Sine)    | 0.12 | 0.18 | 0.04 | Higher accuracy, slightly slower |
+| Model 3 | Traj 3 (Double-sine) | 0.20 | 0.25 | 0.08 | Fastest compute, slightly lower accuracy |
+
+### Analysis
+
+- Advantages:
+  - Model diversity: three models with different complexity
+  - Control performance: NMPC shows good tracking with fast error convergence
+  - Modular design: easy to extend/replace modules
+- Limitations:
+  - Parameter sensitivity: NMPC performance depends on tuning (horizon, weights)
+  - Real-time challenges: complex models (e.g., Model 2) may be heavy for high-frequency real-time control on limited hardware
+
+## Parameter Identification Tool Guide
+
+### Basic CLI Usage
+
+Run the identification script with various models, data files and filtering methods:
+
+```bash
+# Basic usage (default parameters)
 python model_identifier.py --model model_1
 python model_identifier.py --model model_2
 python model_identifier.py --model model_3
@@ -144,240 +159,225 @@ python model_identifier.py --interactive
 
 ### Command Line Parameter Description
 
-| Parameter | Type | Default | Description |
-|---|---|---|---|
-| `--model` | int | 1 | Model type: 1=Standard, 2=Separate Thruster Input, 3=Simplified |
-| `--data` | str | datas/boat1_2_sin.xlsx | Data file path |
-| `--filter` | str | savgol | Filtering method: savgol/ekf/lowpass/none |
-| `--interactive` | flag | False | Enable interactive mode |
-| `--start_row` | int | 0 | Starting row of data |
-| `--row_count` | int | 1500 | Number of data rows to read |
-| `--output_dir` | str | ./model_results/ | Output file directory |
+| Parameter         | Type | Default              | Description |
+|-------------------|------|----------------------|-------------|
+| `--model`         | str  | model_1              | Model type: `model_1`=Standard, `model_2`=Separated thruster input, `model_3`=Simplified |
+| `--data`          | str  | datas/boat1_2_sin.xlsx | Data file path |
+| `--filter`        | str  | savgol               | Filtering: `savgol`/`ekf`/`lowpass`/`none` |
+| `--optimizer`     | str  | SLSQP                | Optimization: `SLSQP` (Sequential Least Squares) / `trust-constr` (Trust Region Constrained) |
+| `--interactive`   | flag | False                | Enable interactive mode |
+| `--start_row`     | int  | 0                    | Starting row |
+| `--row_count`     | int  | 1500                 | Number of rows |
+| `--output_dir`    | str  | model_results/       | Output directory |
 
 ### Filtering Method Description
 
-- **savgol**: Savitzky-Golay smoothing filter (recommended, suitable for most cases)
-- **ekf**: Extended Kalman filter (suitable for data with large noise)
-- **lowpass**: Low-pass filter (suitable for data with obvious high-frequency noise)
-- **none**: No filtering (suitable for clean data that has been preprocessed)
+- savgol: Savitzky-Golay smoothing (recommended)
+- ekf: Extended Kalman Filter (for noisy data)
+- lowpass: Low-pass filtering (for high-frequency noise)
+- none: No filtering (for clean preprocessed data)
 
 ### Result Display
 
-The following table shows the results of three typical experiments in the `model_results` directory.
+The `model_results` directory contains typical outputs:
 
-| Model | Identification Result | Performance Analysis |
-| :--- | :--- | :--- |
-| **Model 1** |![Model 1 Identification Result](model_results/model_1_identification_results.png) | ![Model 1 Performance Analysis](model_results/model_1_performance_analysis.png) |
-| **Model 2** |![Model 2 Identification Result](model_results/model_2_identification_results.png) | ![Model 2 Performance Analysis](model_results/model_2_performance_analysis.png) |
-| **Model 3** |![Model 3 Identification Result](model_results/model_3_identification_results.png) | ![Model 3 Performance Analysis](model_results/model_3_performance_analysis.png) |
+| Model   | Identification Result                                          | Performance Analysis                                    |
+| :------ | :-------------------------------------------------------------- | :------------------------------------------------------ |
+| Model 1 | ![Model 1](model_results/model_1_trajectory_tracking_ned.png)  | ![Perf 1](model_results/model_1_performance_metrics.png) |
+| Model 2 | ![Model 2](model_results/model_2_trajectory_tracking_ned.png)  | ![Perf 2](model_results/model_2_performance_metrics.png) |
+| Model 3 | ![Model 3](model_results/model_3_trajectory_tracking_ned.png)  | ![Perf 3](model_results/model_3_performance_metrics.png) |
 
 ### Workflow
 
-The complete workflow of parameter identification includes:
+1. Data loading: read from Excel files
+2. Data preprocessing: apply selected filtering method
+3. Parameter optimization: identify model parameters
+4. Model validation: compute performance metrics (e.g., RMSE)
+5. Visualization: generate identification and performance plots
+6. Data export: save parameters, result data and metadata
 
-1.  **Data Reading**: Read experimental data from Excel files.
-2.  **Data Preprocessing**: Apply the selected filtering method for data processing.
-3.  **Parameter Optimization**: Use optimization algorithms to identify model parameters.
-4.  **Model Validation**: Calculate performance indicators such as RMSE.
-5.  **Result Visualization**: Generate parameter identification and performance analysis charts.
-6.  **Data Export**: Save parameters, result data, and metadata.
+## Output Files
 
-## 📊 Output File Description
+### Identification Outputs
 
-### Parameter Identification Tool Output
+After identification, the system generates:
 
-After running the parameter identification, the system will generate the following files:
+1. Parameter file: `model_{type}_identification_metadata.json`
+   - Identified model parameters
+   - Optimization result metadata
+   - Note: parameter files are saved under `model_results/`. Parameters should not exceed absolute value 10; values greater than 10 or lower than -10 are internally reduced to keep the fractional part.
+2. Result data: `model_{type}_results.csv`
+   - Time series
+   - Comparison of actual vs simulated values
+3. Metadata: `model_{type}_results_metadata.json`
+   - Processing info and configuration
+   - Performance metrics (RMSE):
+     - u-direction (surge speed)
+     - v-direction (sway speed)
+     - r-direction (yaw rate)
+4. Visualization figures:
+   - `model_{type}_trajectory_tracking_ned.png`: trajectory tracking
+   - `model_{type}_performance_metrics.png`: performance analysis
+   - `model_{type}_state_variables_tracking.png`: state variables
+   - `model_{type}_control_inputs.png`: control inputs
 
-1.  **Parameter File**: `model_{type}_params.json`
-    *   Identified model parameters
-    *   Optimization result information
-    ==Note: The parameter file is saved in the `model_results/` directory. The parameters in it should not exceed 10. If it exceeds, it will be automatically reduced to a decimal of 0.==
-2.  **Result Data**: `model_{type}_identification_results.csv`
-    *   Time series data
-    *   Comparison of actual and simulated values
+## API Usage
 
-3.  **Metadata**: `model_{type}_identification_metadata.json`
-    *   Processing information and configuration
-    *   Performance indicators
+### NMPC Trajectory Tracking CLI Validation
 
-4.  **Visualization Chart**:
-    *   `model_{type}_identification_results.png`: Parameter identification results
-    *   `model_{type}_performance_analysis.png`: Performance analysis
+The system supports flexible NMPC tracking tests via command-line parameters.
 
-### Performance Indicators
+#### Command Line Parameters
 
-The system calculates the following RMSE (Root Mean Square Error) indicators:
-- u-direction (surge velocity)
-- v-direction (sway velocity)
-- r-direction (yaw rate)
+| Parameter        | Type  | Default     | Description |
+|:-----------------|:------|:------------|:------------|
+| `--model`        | int   | 1           | Model category: 1=Base (18 params), 2=Separated (21 params), 3=Simplified (16 params) |
+| `--trajectory`   | int   | 1           | Tracking curve: 1=Ellipse, 2=Sinusoidal line, 3=Double-sine |
+| `--predict_step` | int   | 10          | Prediction horizon; range 5–20 |
+| `--dt`           | float | 0.1         | Sampling time; range 0.05–0.5 |
+| `--cycle_time`   | int   | 210         | Trajectory period; recommended multiples of 3 |
+| `--loop_num`     | int   | 1           | Number of loops; range 1–5 |
+| `--noise_mean`   | float | -0.01       | Trajectory noise mean |
+| `--noise_std`    | float | 0.01        | Trajectory noise std |
+| `--alpha`        | float | 0.1         | Adaptive NMPC strength |
+| `--adaptive`     | flag  | False       | Enable adaptive NMPC (toggle flag) |
+| `--output_dir`   | str   | nmpc_results | Output directory |
 
-## 🔧 API Usage
+- Parameter source: the script scans `model_results/model_{1|2|3}_identification_metadata.json` and loads parameters from the JSON `parameters` field (compatible with `params` or raw list).
+- Key parameters: see list above.
 
-### NMPC Trajectory Tracking Control Parameter Passing Verification
-
-The system supports NMPC trajectory tracking control verification through command line parameters, providing flexible testing options.
-
-#### Command Line Parameter Description
-
-| Parameter | Type | Default | Description |
-| :--- | :--- | :--- | :--- |
-| `--model` | int | 1 | Model category: 1=Basic, 2=Separate, 3=Simplified |
-| `--trajectory` | int | 1 | Tracking curve: 1=Ellipse, 2=Sine line, 3=Double sine |
-| `--adaptive` | flag | False | Enable adaptive NMPC control |
-| `--output_dir`| str | nmpc_results | Output file directory |
-
-#### Supported Models and Trajectories
-
-- **Model Category**:
-    - **Model 1**: Basic model (18 parameters)
-    - **Model 2**: Separate model (21 parameters)
-    - **Model 3**: Simplified model (16 parameters)
-- **Tracking Curve**:
-    - **Trajectory 1**: Ellipse trajectory `x = 40*sin(t) + 1, y = 30*cos(t) + 1`
-    - **Trajectory 2**: Sine line trajectory `x = 40*sin(t) + 1, y = t`
-    - **Trajectory 3**: Double sine trajectory `x = 40*sin(t) + 1, y = 30*sin(0.5*t) + 1`
-
-#### Usage Example
+Example:
 
 ```bash
-# Model 1 + Ellipse trajectory + Adaptive control
-python nmpc_tracking/identified_model_nmpc_test.py --model 1 --trajectory 1 --adaptive
+# Model 1 + Ellipse + Adaptive control
+python identified_model_nmpc_test.py --model 2 --trajectory 1 --adaptive
 
-# Model 2 + Sine trajectory + Non-adaptive
-python nmpc_tracking/identified_model_nmpc_test.py --model 2 --trajectory 2
+# Model 2 + Sine + Non-adaptive
+python identified_model_nmpc_test.py --model 2 --trajectory 2 --cycle_time 316
 
-# Model 3 + Double sine trajectory + Adaptive control
-python nmpc_tracking/identified_model_nmpc_test.py --model 3 --trajectory 3 --adaptive
+# Model 3 + Double-sine + Adaptive
+python identified_model_nmpc_test.py --model 2 --trajectory 3 --cycle_time 317
 ```
 
-#### Output Results and Analysis
+#### Outputs and Analysis
 
-After running the script, the results will be saved in the directory specified by the `--output_dir` parameter (default is `nmpc_results`).
+Results are saved under `--output_dir` (default `nmpc_results`).
 
-- **CSV File**: `nmpc_identified_model_{model}_for_trajectory_{traj}_results.csv` - Detailed simulation data.
-- **Performance Report**: `nmpc_performance_model_{model}_for_trajectory_{traj}_report.txt` - Contains configuration information and performance indicators.
-- **Result Pictures**: Generate a series of pictures of trajectory comparison, error, state variables, and thruster output.
+- CSV: `nmpc_identified_model_{model}_for_trajectory_{traj}_results.csv`
+- Performance report: `nmpc_performance_model_{model}_for_trajectory_{traj}_report.txt`
+- Figures: trajectory comparison, errors, state variables, thruster outputs
 
-**Trajectory Tracking Effect Display**
+Trajectory Tracking Showcase
 
-The following table shows the results of three typical experiments in the `nmpc_results` directory.
+| Model | Trajectory | Trajectory Comparison | Tracking Error |
+| :---: | :--------: | :-------------------: | :------------: |
+| Model 2 | Traj 1 (Ellipse) | ![Traj 1](nmpc_results/nmpc_trajectory_2_for_trajectory_1.png) | ![Err 1](nmpc_results/nmpc_error_2_for_trajectory_1.png) |
+| Model 2 | Traj 2 (Sine)    | ![Traj 2](nmpc_results/nmpc_trajectory_2_for_trajectory_2.png) | ![Err 2](nmpc_results/nmpc_error_2_for_trajectory_2.png) |
+| Model 2 | Traj 3 (Double-sine) | ![Traj 3](nmpc_results/nmpc_trajectory_2_for_trajectory_3.png) | ![Err 3](nmpc_results/nmpc_error_2_for_trajectory_3.png) |
 
-| Model | Trajectory | Trajectory Tracking Comparison | Tracking Error |
-| :---: | :---: | :---: | :---: |
-| Model 1 | Trajectory 1 (Ellipse) |![Trajectory 1](nmpc_results/nmpc_trajectory_1_for_trajectory_1.png) | ![Error 1](nmpc_results/nmpc_error_1_for_trajectory_1.png) |
-| Model 2 | Trajectory 2 (Sine) |![Trajectory 2](nmpc_results/nmpc_trajectory_2_for_trajectory_2.png) | ![Error 2](nmpc_results/nmpc_error_2_for_trajectory_2.png) |
-| Model 3 | Trajectory 3 (Double Sine) |![Trajectory 3](nmpc_results/nmpc_trajectory_3_for_trajectory_3.png) | ![Error 3](nmpc_results/nmpc_error_3_for_trajectory_3.png) |
+Experimental Result Summary
 
-**Brief Analysis of Experimental Results**
+| Model   | Trajectory        | Avg Pos Err (m) | Avg Heading Err (rad) | Summary |
+| :------ | :---------------- | :-------------- | :-------------------- | :------ |
+| Model 1 | Traj 1 (Ellipse)  | ~0.25           | ~0.05                 | Good tracking, stable, suitable for common tasks |
+| Model 2 | Traj 2 (Sine)     | ~0.22           | ~0.04                 | Highest accuracy due to richer model structure |
+| Model 3 | Traj 3 (Double-sine) | ~0.30        | ~0.07                 | Fastest compute; accuracy slightly sacrificed on complex paths |
 
-| Model | Trajectory | Average Position Error (m) | Average Heading Error (rad) | Brief Analysis |
-| :--- | :--- | :--- | :--- | :--- |
-| **Model 1** | Trajectory 1 (Ellipse) | ~0.25 | ~0.05 | Good tracking effect, small error, stable performance, suitable for conventional tasks. |
-| **Model 2** | Trajectory 2 (Sine) | ~0.22 | ~0.04 | With a more refined model structure, the accuracy is the highest and it can respond quickly to trajectory changes. |
-| **Model 3** | Trajectory 3 (Double Sine) | ~0.30 | ~0.07 | The simplified model has a fast calculation speed, but the accuracy is slightly sacrificed under complex trajectories. |
+Note: Metrics are examples; refer to reports under `nmpc_results` for actual numbers.
 
-*Note: The above performance indicators are examples. For specific values, please refer to the performance report generated in the `nmpc_results` directory.*
+## Model Selection Guide
 
-For detailed instructions, please refer to: [NMPC Parameter Passing Instructions](NMPC_参数传递使用说明.md)
+| Model | Complexity | Accuracy | Speed | Use Case |
+|------|------------|----------|-------|----------|
+| Model 1 | Low     | Medium   | Fast  | Rapid prototyping, real-time control |
+| Model 2 | Medium  | High     | Medium| Balance accuracy and efficiency |
+| Model 3 | High    | Highest  | Slow  | High-accuracy simulation, offline analysis |
 
-## 🎯 Model Selection Guide
+## Troubleshooting
 
-| Model | Complexity | Accuracy | Calculation Speed | Applicable Scenarios |
-|---|---|---|---|---|
-| Model 1 | Low | Medium | Fast | Rapid prototyping, real-time control |
-| Model 2 | Medium | High | Medium | Balance accuracy and efficiency |
-| Model 3 | High | Highest | Slow | High-precision simulation, offline analysis |
+### Common Issues
 
-## 🔍 Troubleshooting
+1. CasADi import error
 
-### Common Problems
+```bash
+pip install casadi
+```
 
-1.  **CasADi Import Error**
-    ```bash
-    pip install casadi
-    ```
+2. Numeric overflow warnings
+- Check parameter validity
+- Tune NMPC parameters
+- Reduce simulation step size
 
-2.  **Numerical Overflow Warning**
-    - Check if the model parameters are reasonable
-    - Adjust the NMPC controller parameters
-    - Reduce the simulation step size
+3. Identification failure
+- Check data file path
+- Verify data format
+- Adjust optimizer parameters
 
-3.  **Parameter Identification Failed**
-    - Check the data file path
-    - Confirm that the data format is correct
-    - Adjust the optimizer parameters
+4. Plotting issues
+- Ensure `matplotlib` is installed
+- Check font settings
+- Verify data integrity
 
-4.  **Plotting Display Problem**
-    - Make sure matplotlib is installed
-    - Check the font settings
-    - Verify data integrity
+### Performance Optimization Tips
 
-### Performance Optimization Suggestions
+- For real-time apps, Model 1 is recommended
+- Tune NMPC prediction horizons for balance between performance and speed
+- Use parallel computation to accelerate identification
+- Choose suitable filtering methods to improve data quality
 
-- For real-time applications, Model 1 is recommended
-- Adjust the NMPC prediction horizon to balance performance and calculation speed
-- Use parallel computing to accelerate the parameter identification process
-- Select an appropriate filtering method to improve data quality
+## Configuration Files
 
-## 📚 Configuration File Description
+Each model has its configuration (conceptually):
 
-Each model has a corresponding configuration file, located in the `config/` directory:
+- `model1_config.json`: Config for Model 1
+- `model2_config.json`: Config for Model 2
+- `model3_config.json`: Config for Model 3
 
-- `model1_config.json`: Parameter configuration for Model 1
-- `model2_config.json`: Parameter configuration for Model 2
-- `model3_config.json`: Parameter configuration for Model 3
-
-The configuration file contains:
-- Initial values of model parameters
+Includes:
+- Initial parameter guesses
 - NMPC controller parameters
 - Simulation settings
 - Data processing parameters
 
-## 📊 Data Format Description
+## Data Format
 
-The system uses a unified data format, including the following standard columns:
+Unified data format includes:
 
-- **Time Column**: `time` - Simulation time
-- **State Variables**: `u`, `v`, `r`, `x`, `y`, `psi` - Ship state
-- **Control Inputs**: `Ts`, `Tp` - Thruster control quantities
-- **Reference Signals**: `u_ref`, `v_ref`, `r_ref`, `x_ref`, `y_ref`, `psi_ref`
-- **Tracking Errors**: `error_x`, `error_y`, `error_psi`
+- Time: `time`
+- State variables: `u`, `v`, `r`, `x`, `y`, `psi`
+- Control inputs: `Ts`, `Tp`
+- Reference signals: `u_ref`, `v_ref`, `r_ref`, `x_ref`, `y_ref`, `psi_ref`
+- Tracking errors: `error_x`, `error_y`, `error_psi`
 
-## 🤝 Contribution Guide
+## Contributing
 
-Contributions are welcome! Please follow these steps:
+Contributions are welcome!
 
-1.  Fork this project
-2.  Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3.  Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4.  Push to the branch (`git push origin feature/AmazingFeature`)
-5.  Open a Pull Request
+1. Fork the project
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-## 📄 License
+## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see [LICENSE](LICENSE) for details.
 
-## 📞 Contact
+## Contact
 
-- **GitHub**: [https://github.com/2345vor/MI](https://github.com/2345vor/MI)
-- **Email**: 3126171871@qq.com
+- GitHub: https://github.com/2345vor/MI
+- Email: 3126171871@qq.com
 
-If you have any questions or suggestions, please contact us through GitHub Issues or email.
+For questions or suggestions, please open a GitHub Issue or email.
 
 ---
 
-**Note**: This system is for research and educational purposes only. Please make appropriate modifications and verifications according to specific needs in actual applications.
+Note: This system is for research and education purposes. For practical applications, please adapt and validate according to specific requirements.
 
-## 🔮 Future Work
+## Future Work
 
-- **Physical Verification**: Apply the current simulation results to a physical platform for experiments such as point-following, path tracking, or task trajectory.
-- **Algorithm Enhancement**: Implement more advanced identification algorithms (such as genetic algorithms, particle swarm optimization) and control algorithms.
-- **Online Identification and Adaptive Control**: Develop online parameter identification functions, combined with adaptive control strategies, to improve the system's robustness to environmental changes.
-- **Graphical User Interface (GUI)**: Develop a user-friendly graphical interface to simplify the operation process and improve ease of use.
-- **Code Optimization**: Further optimize the code to improve computational efficiency, especially the real-time performance on embedded systems.
-
-## 📖 Related Documents
-
-- [Usage Examples](examples/usage_examples.md) - Detailed usage examples and best practices
-- [NMPC Parameter Passing Instructions](NMPC_参数传递使用说明.md) - Detailed instructions for NMPC trajectory tracking control parameter passing verification
-- [English README](README.md) - English version of this document
+- Stronger physical validation: apply current simulation results on real platforms for waypoint, path tracking, or mission trajectory experiments.
+- Algorithm enhancements: implement more identification algorithms (e.g., genetic algorithms, particle swarm) and control algorithms.
+- Online identification & adaptive control: develop online parameter identification combined with adaptive control for robustness against environment changes.
+- GUI: develop a user-friendly graphical interface to simplify workflows and improve usability.
+- Code optimization: further optimize code for computational efficiency, especially for embedded real-time performance.

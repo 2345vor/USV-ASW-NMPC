@@ -16,12 +16,24 @@ class ModelType:
 
 # ==================== 加载识别的模型参数 ====================
 def load_identified_params(params_file):
-    """加载识别的模型参数"""
-    with open(params_file, 'r') as f:
-        params = json.load(f)
+    """加载识别的模型参数：从metadata JSON的`parameters`字段读取，兼容直接列表"""
+    with open(params_file, 'r', encoding='utf-8') as f:
+        data = json.load(f)
     
-    # 对参数进行限制，保留小数部分
-    params = [x - int(x) + 1 if x > 10 else x - int(x) - 1 if x < -10 else x for x in params]
+    if isinstance(data, dict):
+        if 'parameters' in data and isinstance(data['parameters'], list):
+            params_raw = data['parameters']
+        elif 'params' in data and isinstance(data['params'], list):
+            params_raw = data['params']
+        else:
+            raise ValueError(f"参数文件不包含'parameters'或'params'列表: {params_file}")
+    elif isinstance(data, list):
+        params_raw = data
+    else:
+        raise ValueError(f"不支持的参数文件格式: {type(data)} - {params_file}")
+    
+    # 对参数进行限制，保留小数部分（与原逻辑保持一致）
+    params = [x - int(x) + 1 if x > 10 else x - int(x) - 1 if x < -10 else x for x in params_raw]
     
     return params
 
@@ -31,7 +43,7 @@ def get_available_models():
     test_results_dir = 'model_results'
     
     for model_num in [1, 2, 3]:
-        params_file = os.path.join(test_results_dir, f'model_{model_num}_params.json')
+        params_file = os.path.join(test_results_dir, f'model_{model_num}_identification_metadata.json')
         if os.path.exists(params_file):
             available_models.append((model_num, params_file))
     
@@ -52,6 +64,12 @@ def parse_arguments():
                        help='轨迹周期时间,最大值360,最小值210,默认210,推荐是3的倍数')
     parser.add_argument('--loop_num', type=int, default=1,
                        help='循环次数,最大值5,最小值1,默认1')
+    parser.add_argument('--noise_mean', type=float, default=-0.01,
+                       help='轨迹噪声均值,默认0.0')
+    parser.add_argument('--noise_std', type=float, default=0.01,
+                       help='轨迹噪声标准差,默认0.0')
+    parser.add_argument('--alpha', type=float, default=0.1,
+                       help='自适应NMPC控制参数,默认0.1')
     parser.add_argument('--adaptive', action='store_true', default=False,
                        help='是否启用自适应NMPC控制')
     parser.add_argument('--output_dir', type=str, default='nmpc_results',
@@ -68,13 +86,13 @@ def get_trajectory_equations(trajectory_type, t):
     elif trajectory_type == 2:
         # 正弦直线轨迹
         x_r = 40 * np.sin(t) + 1
-        y_r = t
+        y_r = 10*t
         name = "SIN Trajectory: x = 40*sin(t) + 1, y = t"
     elif trajectory_type == 3:
         # 双正弦轨迹
-        x_r = 40 * np.sin(t) + 1
-        y_r = 30 * np.sin(2 * t) + 1
-        name = "Lemniscate Trajectory: x = 40*sin(t) + 1, y = 30*sin(2*t) + 1"
+        x_r = 25 * np.cos(2*t +1.7)
+        y_r = 25 * np.sin(t +1.7)
+        name = "Lissajous Trajectory: x = 25*cos(2*t +1.7), y = 25*sin(t +1.7)"
     else:
         raise ValueError(f"不支持的轨迹类型: {trajectory_type}")
     
@@ -115,13 +133,15 @@ if not model_found:
 M_PI = np.pi
 args.predict_step = min(max(args.predict_step, 5), 20)
 args.dt = min(max(args.dt, 0.05), 0.5)
-args.cycle_time = min(max(args.cycle_time, 210), 360)
+args.cycle_time = min(max(args.cycle_time, 210), 3600)
 args.loop_num = min(max(args.loop_num, 1), 5)
 N = args.predict_step           # 预测步长
 T = args.dt                     # 采样时间
 motor_power = 500
+alpha = args.alpha
 Adaptive_flag = args.adaptive  # 使用命令行参数控制自适应功能
-position_noise_std = 0.01   # 位置噪声标准差
+position_noise_mean = args.noise_mean      # 位置噪声均值
+position_noise_std = args.noise_std      # 位置噪声标准差
 loop_num = args.loop_num
 tol = args.cycle_time*loop_num  # 仿真总时间s
 t = np.linspace(0, 2*M_PI*loop_num, int(tol / T) + 1)  # 时间向量
@@ -141,12 +161,16 @@ print(f"自适应控制: {'启用' if Adaptive_flag else '禁用'}")
 print(f"模型类型: Model {model_type}")
 
 # ==================== 权重参数 ====================
-Q_low = [0.5, 0.1, 0.1, 30, 30, 0.1]
-Q_high = [0.5, 0.1, 0.1, 1000, 1000, 1]
-R_low = [0.001, 0.001]
-R_high = [0.001, 0.001]
-F_low = [0.1, 0.2, 0.2, 10, 10, 0.15]
-F_high = [0.1, 0.2, 0.2, 5000, 5000, 0.5]
+if args.trajectory == 2 or args.trajectory == 1:
+    Q_low = [0.5, 0.1, 0.1, 10, 10, 0.1]
+    Q_high = [5, 1, 1, 100, 100, 1]
+    R = [0.01, 0.01]
+    F = [0.5, 0.1, 0.1, 100, 100, 0.1]
+elif args.trajectory == 3:
+    Q_low = [0.5, 0.1, 0.1, 60, 60, 0.1]      # q_j^min
+    Q_high = [0.5, 0.1, 0.1, 900, 900, 0.1]    # q_j^max
+    R = [0.002, 0.002]                     # 控制权重固定
+    F = [0.5, 0.1, 0.1, 100, 100, 0.1]
 
 # ==================== 状态和控制变量定义 ====================
 u = ca.SX.sym('u')
@@ -223,7 +247,7 @@ rhs = build_dynamics_model(model_type, identified_params, u, v, r, psi, Tp, Ts)
 f = ca.Function('f', [state, control], [rhs])
 
 # ==================== 初始状态 ====================
-x0 = [0, 0, 0, path_points[0][0] - 5, path_points[0][1] - 5, 0]
+x0 = [0, 0, 0, path_points[0][0]+2, path_points[0][1]-2, 0]
 xs_list = [[0, 0, 0, point[0], point[1], 0] for point in path_points]
 state_history = [x0]
 u0 = np.zeros(2 * N).tolist()
@@ -277,8 +301,8 @@ solver = ca.nlpsol('solver', 'ipopt', nlp, opts)
 # ==================== 约束边界 ====================
 lbx = [-motor_power,-motor_power] * (N)
 ubx = [motor_power,motor_power] * (N)
-lbg = [-3, -1, -0.3*M_PI] * (N+1)
-ubg = [3, 1, 0.3*M_PI] * (N+1)
+lbg = [-3, -0.5, -0.3*M_PI] * (N+1)
+ubg = [3, 0.5, 0.3*M_PI] * (N+1)
 
 # ==================== 初始化误差记录 ====================
 lateral_errors = []
@@ -320,18 +344,18 @@ for sim in range(sim_steps):
 
     delta_psi = normalize_angle_diff(target_psi-current_psi)
     heading_errors.append(abs(delta_psi))
-
-    distance_coeff = max(0, min(1.0, distance_error / 100.0))
+    Q_current = []
     if Adaptive_flag:
-        Q_current = Q_low
-        R_current = R_low
-        distance_coeff = distance_error* np.cos(delta_psi) / 100.0
-        F_current = [(F_high[i] + F_low[i])/2 + distance_coeff /(1+np.abs(distance_coeff))* (F_high[i] - F_low[i]) for i in range(6)]
+        ej = distance_error/100  # e_j = x_j - x_ref_j        
+        for j in range(6):
+            # ej = abs(state_error[j])
+            qj = Q_low[j] + (Q_high[j] - Q_low[j]) * (1 - math.exp(-alpha * ej))
+            Q_current.append(qj)
     else:
-        Q_current = Q_low
-        R_current = R_low
-        F_current = [(F_high[i] + F_low[i])/2 for i in range(6)]
-
+        for j in range(6):
+            Q_current.append((Q_low[j] + Q_high[j]) / 2)
+    R_current = R
+    F_current = F
     p_state = x0 + xs
     p_weight = Q_current + R_current + F_current
     p = p_state + p_weight
@@ -354,7 +378,7 @@ for sim in range(sim_steps):
     x_next = x0 + T * next_state.full().flatten()
 
     # 加入白噪声
-    noise = np.random.normal(0, position_noise_std, size=2)
+    noise = np.random.normal(position_noise_mean, position_noise_std, size=2)
     x_next[3] += noise[0]
     x_next[4] += noise[1]
     x0 = x_next.tolist()
@@ -385,13 +409,13 @@ print(f"最大航向误差: {np.max(heading_errors):.4f} rad")
 
 # ==================== 绘图 ====================
 plt.figure(figsize=(10, 6))
-plt.plot(ref_x, ref_y, 'r--', linewidth=2, label='Reference Path')
-plt.plot(traj_x, traj_y, 'b-', linewidth=1.5, label='NMPC Trajectory (Identified Model)')
-plt.scatter([traj_x[0]], [traj_y[0]], c='g', s=100, label='Start', zorder=5)
-plt.scatter([traj_x[-1]], [traj_y[-1]], c='orange', s=100, label='End', zorder=5)
-plt.xlabel('X Position')
-plt.ylabel('Y Position')
-plt.title(f'NMPC Path Tracking with Identified Model\n{trajectory_name}')
+plt.plot(ref_y, ref_x, 'r--', linewidth=2, label='Reference Path')
+plt.plot(traj_y, traj_x, 'b-', linewidth=1.5, label='NMPC Trajectory (Identified Model)')
+plt.scatter([traj_y[0]], [traj_x[0]], c='g', s=100, label='Start', zorder=5)
+plt.scatter([traj_y[-1]], [traj_x[-1]], c='orange', s=100, label='End', zorder=5)
+plt.xlabel('East Position (m)')
+plt.ylabel('North Position (m)')
+plt.title(f'NMPC Path Tracking with Identified Model (NED Coordinate)\n{trajectory_name}')
 plt.legend()
 plt.grid(True, alpha=0.3)
 plt.axis('equal')

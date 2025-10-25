@@ -42,7 +42,8 @@ class DataLoader:
             self.timestamp = self.data['DateTime'].values
             self.x = self.data['x'].values
             self.y = self.data['y'].values
-            self.psi = self.data['course'].values * np.pi / 180
+            self.psi = self.data['Heading'].values * np.pi / 180
+            # self.psi = self.data['course'].values * np.pi / 180
             self.Ts = self.data['PWM_R'].values - 1500  # 右推进器PWM值归一化
             self.Tp = self.data['PWM_L'].values - 1500  # 左推进器PWM值归一化
             

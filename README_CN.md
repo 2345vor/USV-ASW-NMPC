@@ -68,12 +68,12 @@ MI/
 ### 环境要求
 
 - Python 3.8+
-- 依赖包：numpy, scipy, pandas, matplotlib, casadi, control
+- 依赖包：详见`requirements.txt`（包含numpy、scipy、pandas、matplotlib、seaborn、casadi、control、openpyxl、scikit-learn、filterpy等）
 
 ### 安装依赖
 
 ```bash
-pip install numpy scipy pandas matplotlib casadi control
+pip install -r requirements.txt
 ```
 
 ## 📊 实验结果与分析
@@ -83,41 +83,43 @@ pip install numpy scipy pandas matplotlib casadi control
 以下是使用 `model_identifier.py` 工具对模型进行参数辨识后的结果示例。
 
 **模型1辨识结果**
-![模型1辨识结果](model_results/model_1_identification_results.png)
+![模型1辨识结果](model_results/model_1_trajectory_tracking_ned.png)
 
 **模型1性能分析**
-![模型1性能分析](model_results/model_1_performance_analysis.png)
+![模型1性能分析](model_results/model_1_performance_metrics.png)
 
 ### NMPC轨迹跟踪结果
 
 使用辨识出的模型参数，通过 `identified_model_nmpc_test.py` 进行NMPC轨迹跟踪控制。
 
-**轨迹跟踪对比 (模型1, 轨迹1)**
-![轨迹跟踪对比](nmpc_results/nmpc_trajectory_1_for_trajectory_1.png)
 
-**跟踪误差 (模型1, 轨迹1)**
-![跟踪误差](nmpc_results/nmpc_error_1_for_trajectory_1.png)
+**轨迹跟踪对比 (模型2, 轨迹1)**
+![轨迹跟踪对比](nmpc_results/nmpc_trajectory_2_for_trajectory_1.png)
+
+**跟踪误差 (模型2, 轨迹1)**
+![跟踪误差](nmpc_results/nmpc_error_2_for_trajectory_1.png)
 
 ### 实验效果对比
 
 下表对比了三种模型在不同轨迹下的跟踪性能（以RMSE均方根误差为例）。
 
-| 模型 | 轨迹 | RMSE (x) | RMSE (y) | RMSE (psi) | 综合评价 |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **模型1** | 轨迹1 (椭圆) | 0.15 | 0.20 | 0.05 | 表现均衡，适用于大多数场景 |
-| **模型2** | 轨迹2 (正弦) | 0.12 | 0.18 | 0.04 | 精度较高，但计算稍慢 |
-| **模型3** | 轨迹3 (双正弦) | 0.20 | 0.25 | 0.08 | 计算最快，但精度略低 |
+| 模型            | 轨迹           | RMSE (x) | RMSE (y) | RMSE (psi) | 综合评价                   |
+| :-------------- | :------------- | :------- | :------- | :--------- | :------------------------- |
+| **模型1** | 轨迹1 (椭圆)   | 0.15     | 0.20     | 0.05       | 表现均衡，适用于大多数场景 |
+| **模型2** | 轨迹2 (正弦)   | 0.12     | 0.18     | 0.04       | 精度较高，但计算稍慢       |
+| **模型3** | 轨迹3 (双正弦) | 0.20     | 0.25     | 0.08       | 计算最快，但精度略低       |
 
 ### 效果分析
 
 - **优势**:
-    - **模型多样性**: 提供了三种不同复杂度的模型，可以根据精度和计算效率的需求进行选择。
-    - **控制性能**: NMPC控制器在不同轨迹下均表现出良好的跟踪性能，误差收敛快。
-    - **模块化**: 系统设计良好，易于扩展和替换不同模块。
 
+  - **模型多样性**: 提供了三种不同复杂度的模型，可以根据精度和计算效率的需求进行选择。
+  - **控制性能**: NMPC控制器在不同轨迹下均表现出良好的跟踪性能，误差收敛快。
+  - **模块化**: 系统设计良好，易于扩展和替换不同模块。
 - **不足**:
-    - **参数敏感性**: NMPC控制器的性能对参数（如预测时域、控制权重）较为敏感，需要仔细调优。
-    - **实时性挑战**: 对于复杂模型（如模型2），在计算能力有限的硬件上实现高频率实时控制仍有挑战。
+
+  - **参数敏感性**: NMPC控制器的性能对参数（如预测时域、控制权重）较为敏感，需要仔细调优。
+  - **实时性挑战**: 对于复杂模型（如模型2），在计算能力有限的硬件上实现高频率实时控制仍有挑战。
 
 ## 📖 参数辨识工具使用指南
 
@@ -145,15 +147,16 @@ python model_identifier.py --interactive
 
 ### 命令行参数说明
 
-| 参数 | 类型 | 默认值 | 说明 |
-|------|------|--------|------|
-| `--model` | int | 1 | 模型类型：1=标准模型, 2=分离推进器输入模型, 3=简化模型 |
-| `--data` | str | datas/boat1_2_sin.xlsx | 数据文件路径 |
-| `--filter` | str | savgol | 滤波方法：savgol/ekf/lowpass/none |
-| `--interactive` | flag | False | 启用交互式模式 |
-| `--start_row` | int | 0 | 数据起始行 |
-| `--row_count` | int | 1500 | 读取数据行数 |
-| `--output_dir` | str | ./model_results/ | 输出文件目录 |
+| 参数              | 类型 | 默认值                 | 说明                                                   |
+| ----------------- | ---- | ---------------------- | ------------------------------------------------------ |
+| `--model`         | str  | model_1                | 模型类型：model_1=标准模型, model_2=分离推进器输入模型, model_3=简化模型 |
+| `--data`          | str  | datas/boat1_2_sin.xlsx | 数据文件路径                                           |
+| `--filter`        | str  | savgol                 | 滤波方法：savgol/ekf/lowpass/none                      |
+| `--optimizer`     | str  | SLSQP                  | 优化方法：SLSQP（序列最小二乘规划）/trust-constr（信赖域约束） |
+| `--interactive`   | flag | False                  | 启用交互式模式                                         |
+| `--start_row`     | int  | 0                      | 数据起始行                                             |
+| `--row_count`     | int  | 1500                   | 读取数据行数                                           |
+| `--output_dir`    | str  | model_results/         | 输出文件目录                                           |
 
 ### 滤波方法说明
 
@@ -166,11 +169,17 @@ python model_identifier.py --interactive
 
 下表展示了 `model_results` 目录中三种典型实验的结果。
 
-| 模型 | 辨识结果 | 性能分析 |
-| :--- | :--- | :--- |
-| **模型1** |![模型1辨识结果](model_results/model_1_identification_results.png) | ![模型1性能分析](model_results/model_1_performance_analysis.png) |
-| **模型2** |![模型2辨识结果](model_results/model_2_identification_results.png) | ![模型2性能分析](model_results/model_2_performance_analysis.png) |
-| **模型3** |![模型3辨识结果](model_results/model_3_identification_results.png) | ![模型3性能分析](model_results/model_3_performance_analysis.png) |
+| 模型            | 辨识结果                                                          | 性能分析                                                      |
+| :-------------- | :---------------------------------------------------------------- | :------------------------------------------------------------ |
+| **模型1** | ![模型1辨识结果](model_results/model_1_trajectory_tracking_ned.png) | ![模型1性能分析](model_results/model_1_performance_metrics.png) |
+| **模型2** | ![模型2辨识结果](model_results/model_2_trajectory_tracking_ned.png) | ![模型2性能分析](model_results/model_2_performance_metrics.png) |
+| **模型3** | ![模型3辨识结果](model_results/model_3_trajectory_tracking_ned.png) | ![模型3性能分析](model_results/model_3_performance_metrics.png) |
+
+三种模型在参数辨识和性能分析中表现良好，但模型3的计算效率较低。模型1和模型2的参数辨识结果均显示出较高的精度，而模型3的参数辨识结果则显示出较高的计算效率。推荐使用模型2，作为主要模型使用。
+运行`example/model_tracking_comparison.py`进行对比分析。
+![模型轨迹跟踪对比分析](model_results/model_tracking_comparison.png)
+运行`example/model_heatmap_comparison.py`进行对比分析。
+![模型参数对比分析](model_results/model_heatmap_comparison.png)
 
 ### 工作流程
 
@@ -183,38 +192,38 @@ python model_identifier.py --interactive
 5. **结果可视化**：生成参数辨识和性能分析图表
 6. **数据导出**：保存参数、结果数据和元数据
 
-
 ## 📊 输出文件说明
 
 ### 参数辨识工具输出
 
 运行参数辨识后，系统会生成以下文件：
 
-1. **参数文件**: `model_{type}_params.json`
+1. **参数文件**: `model_{type}_identification_metadata.json`
+
    - 辨识得到的模型参数
    - 优化结果信息
-==注意：参数文件保存在`model_results/`目录下，里面的参数请不要超过10，超过则自动消减为0.的小数==
-2. **结果数据**: `model_{type}_identification_results.csv`
+     ==注意：参数文件保存在 `model_results/`目录下，里面的参数请不要超过10，超过则自动消减为个位数==
+2. **结果数据**: `model_{type}_results.csv`
+
    - 时间序列数据
    - 实际值与仿真值对比
+3. **元数据**: `model_{type}_results_metadata.json`
 
-3. **元数据**: `model_{type}_identification_metadata.json`
    - 处理信息和配置
    - 性能指标
+   系统计算以下RMSE（均方根误差）指标：
+   - u方向（纵荡速度）
+   - v方向（横荡速度）
+   - r方向（艏摇角速度）
+4. **可视化图表**:
 
-4. **可视化图表**: 
-   - `model_{type}_identification_results.png`: 参数辨识结果
-   - `model_{type}_performance_analysis.png`: 性能分析
+   - `model_{type}_trajectory_tracking_ned.png`: 轨迹跟踪结果
+   - `model_{type}_performance_metrics.png`: 性能分析
+   - `model_{type}_state_variables_tracking.png`: 轨迹状态结果
+   - `model_{type}_control_inputs.png`: 控制输入结果
 
-### 性能指标
-
-系统计算以下RMSE（均方根误差）指标：
-- u方向（纵荡速度）
-- v方向（横荡速度） 
-- r方向（艏摇角速度）
 
 ## 🔧 API 使用说明
-
 
 ### NMPC轨迹跟踪控制传参验证
 
@@ -222,35 +231,64 @@ python model_identifier.py --interactive
 
 #### 命令行参数说明
 
-| 参数 | 类型 | 默认值 | 说明 |
-| :--- | :--- | :--- | :--- |
-| `--model` | int | 1 | 模型类别：1=基础模型, 2=分离模型, 3=简化模型 |
-| `--trajectory` | int | 1 | 跟踪曲线：1=椭圆, 2=正弦直线, 3=双正弦 |
-| `--adaptive` | flag | False | 启用自适应NMPC控制 |
-| `--output_dir`| str | nmpc_results | 输出文件目录 |
+| 参数               | 类型  | 默认值       | 说明                                                                 |
+| :----------------- | :---- | :----------- | :------------------------------------------------------------------- |
+| `--model`        | int   | 1            | 模型类别：1=基础模型(18参数), 2=分离模型(21参数), 3=简化模型(16参数) |
+| `--trajectory`   | int   | 1            | 跟踪曲线：1=椭圆, 2=正弦直线, 3=双正弦                               |
+| `--predict_step` | int   | 10           | 预测步长；范围 5–20                                                 |
+| `--dt`           | float | 0.1          | 采样时间；范围 0.05–0.5                                             |
+| `--cycle_time`   | int   | 210          | 轨迹周期；推荐为 3 的倍数                                            |
+| `--loop_num`     | int   | 1            | 循环次数；范围 1–5                                                  |
+| `--noise_mean`   | float | -0.01        | 轨迹噪声均值                                                         |
+| `--noise_std`    | float | 0.01         | 轨迹噪声标准差                                                       |
+| `--alpha`        | float | 0.1          | 自适应NMPC控制参数强度                                               |
+| `--adaptive`     | flag  | False        | 启用自适应NMPC控制（加入该标志即可）                                 |
+| `--output_dir`   | str   | nmpc_results | 输出文件目录                                                         |
+
+- 参数来源：脚本会自动扫描 `model_results/model_{1|2|3}_identification_metadata.json` 文件，并从 JSON 的 `parameters` 字段加载模型参数（兼容 `params` 或直接列表）。
+- 关键参数：
+  - `--model` 选择模型类型（1/2/3）。
+  - `--trajectory` 选择跟踪曲线（1: 椭圆，2: 正弦直线，3: 双正弦）。
+  - `--predict_step` 预测步长（5–20）。
+  - `--dt` 采样时间（0.05–0.5）。
+  - `--cycle_time` 轨迹周期（推荐为3的倍数）。
+  - `--loop_num` 循环次数。
+  - `--noise_mean` 与 `--noise_std` 轨迹噪声设置。
+  - `--alpha` 自适应NMPC参数强度。
+  - `--adaptive` 开启自适应控制（加入该标志即可）。
+  - `--output_dir` 输出目录。
+
+示例：
+
+```bash
+# 自定义预测步长、采样时间和周期，并启用自适应控制
+python identified_model_nmpc_test.py --model 2 --trajectory 2 --predict_step 10 --dt 0.1 --cycle_time 210 --alpha 0.1 --adaptive
+```
+
+说明：加载的参数在内部会进行限制处理（大于10或小于-10的值保留小数部分），如需修改该规则，可在 `identified_model_nmpc_test.py` 的 `load_identified_params` 中调整。
 
 #### 支持的模型与轨迹
 
 - **模型类别**:
-    - **Model 1**: 基础模型 (18参数)
-    - **Model 2**: 分离模型 (21参数)
-    - **Model 3**: 简化模型 (16参数)
+  - **Model 1**: 基础模型 (18参数)
+  - **Model 2**: 分离模型 (21参数)
+  - **Model 3**: 简化模型 (16参数)
 - **跟踪曲线**:
-    - **轨迹1**: 椭圆轨迹 `x = 40*sin(t) + 1, y = 30*cos(t) + 1`
-    - **轨迹2**: 正弦直线轨迹 `x = 40*sin(t) + 1, y = t`
-    - **轨迹3**: 双正弦轨迹 `x = 40*sin(t) + 1, y = 30*sin(0.5*t) + 1`
+  - **轨迹1**: 椭圆轨迹 `x = 40*sin(t) + 1, y = 30*cos(t) + 1`
+  - **轨迹2**: 正弦轨迹 `x = 40*sin(t) + 1, y = 10*t`
+  - **轨迹3**: Lissajous轨迹 `x = 25*cos(2*t+1.7), y = 25*sin(t+1.7)`
 
 #### 使用示例
 
 ```bash
 # Model 1 + 椭圆轨迹 + 自适应控制
-python nmpc_tracking/identified_model_nmpc_test.py --model 1 --trajectory 1 --adaptive
+python identified_model_nmpc_test.py --model 2 --trajectory 1 --adaptive
 
 # Model 2 + 正弦轨迹 + 非自适应
-python nmpc_tracking/identified_model_nmpc_test.py --model 2 --trajectory 2
+python identified_model_nmpc_test.py --model 2 --trajectory 2 --cycle_time 316
 
 # Model 3 + 双正弦轨迹 + 自适应控制
-python nmpc_tracking/identified_model_nmpc_test.py --model 3 --trajectory 3 --adaptive
+python identified_model_nmpc_test.py --model 2 --trajectory 3  --cycle_time 317
 ```
 
 #### 输出结果与分析
@@ -265,20 +303,19 @@ python nmpc_tracking/identified_model_nmpc_test.py --model 3 --trajectory 3 --ad
 
 下表展示了 `nmpc_results` 目录中三种典型实验的结果。
 
-| 模型 | 轨迹 | 轨迹跟踪对比 | 跟踪误差 |
-|  :---: | :---: | :---: | :---: |
-| 模型1 | 轨迹1 (椭圆) |![轨迹1](nmpc_results/nmpc_trajectory_1_for_trajectory_1.png) | ![误差1](nmpc_results/nmpc_error_1_for_trajectory_1.png) |
-| 模型2 | 轨迹2 (正弦) |![轨迹2](nmpc_results/nmpc_trajectory_2_for_trajectory_2.png) | ![误差2](nmpc_results/nmpc_error_2_for_trajectory_2.png) |
-| 模型3 | 轨迹3 (双正弦) |![轨迹3](nmpc_results/nmpc_trajectory_3_for_trajectory_3.png) | ![误差3](nmpc_results/nmpc_error_3_for_trajectory_3.png) |
-
+| 模型 |      轨迹      |                        轨迹跟踪对比                        |                        跟踪误差                        |
+| :---: | :------------: | :---------------------------------------------------------: | :----------------------------------------------------: |
+| 模型2 |  轨迹1 (椭圆)  | ![轨迹1](nmpc_results/nmpc_trajectory_2_for_trajectory_1.png) | ![误差1](nmpc_results/nmpc_error_2_for_trajectory_1.png) |
+| 模型2 |  轨迹2 (正弦)  | ![轨迹2](nmpc_results/nmpc_trajectory_2_for_trajectory_2.png) | ![误差2](nmpc_results/nmpc_error_2_for_trajectory_2.png) |
+| 模型2 | 轨迹3 (双正弦) | ![轨迹3](nmpc_results/nmpc_trajectory_2_for_trajectory_3.png) | ![误差3](nmpc_results/nmpc_error_2_for_trajectory_3.png) |
 
 **实验结果简要分析**
 
-| 模型 | 轨迹 | 平均位置误差 (m) | 平均航向误差 (rad) | 简要分析 |
-| :--- | :--- | :--- | :--- | :--- |
-| **模型1** | 轨迹1 (椭圆) | ~0.25 | ~0.05 | 跟踪效果良好，误差较小，表现稳定，适用于常规任务。 |
-| **模型2** | 轨迹2 (正弦) | ~0.22 | ~0.04 | 凭借更精细的模型结构，精度最高，能够快速响应轨迹变化。 |
-| **模型3** | 轨迹3 (双正弦) | ~0.30 | ~0.07 | 简化模型计算速度快，但在复杂轨迹下精度略有牺牲。 |
+| 模型            | 轨迹           | 平均位置误差 (m) | 平均航向误差 (rad) | 简要分析                                               |
+| :-------------- | :------------- | :--------------- | :----------------- | :----------------------------------------------------- |
+| **模型1** | 轨迹1 (椭圆)   | ~0.25            | ~0.05              | 跟踪效果良好，误差较小，表现稳定，适用于常规任务。     |
+| **模型2** | 轨迹2 (正弦)   | ~0.22            | ~0.04              | 凭借更精细的模型结构，精度最高，能够快速响应轨迹变化。 |
+| **模型3** | 轨迹3 (双正弦) | ~0.30            | ~0.07              | 简化模型计算速度快，但在复杂轨迹下精度略有牺牲。       |
 
 *注：以上性能指标为示例，具体数值请参考 `nmpc_results` 目录下生成的性能报告。*
 
@@ -286,32 +323,33 @@ python nmpc_tracking/identified_model_nmpc_test.py --model 3 --trajectory 3 --ad
 
 ## 🎯 模型选择指南
 
-| 模型 | 复杂度 | 精度 | 计算速度 | 适用场景 |
-|------|--------|------|----------|----------|
-| 模型1 | 低 | 中等 | 快 | 快速原型、实时控制 |
-| 模型2 | 中等 | 高 | 中等 | 平衡精度与效率 |
-| 模型3 | 高 | 最高 | 慢 | 高精度仿真、离线分析 |
+| 模型  | 复杂度 | 精度 | 计算速度 | 适用场景             |
+| ----- | ------ | ---- | -------- | -------------------- |
+| 模型1 | 低     | 中等 | 快       | 快速原型、实时控制   |
+| 模型2 | 中等   | 高   | 中等     | 平衡精度与效率       |
+| 模型3 | 高     | 最高 | 慢       | 高精度仿真、离线分析 |
 
 ## 🔍 故障排除
 
 ### 常见问题
 
 1. **CasADi导入错误**
+
    ```bash
    pip install casadi
    ```
-
 2. **数值溢出警告**
+
    - 检查模型参数是否合理
    - 调整NMPC控制器参数
    - 减小仿真步长
-
 3. **参数辨识失败**
+
    - 检查数据文件路径
    - 确认数据格式正确
    - 调整优化器参数
-
 4. **绘图显示问题**
+
    - 确保安装了matplotlib
    - 检查字体设置
    - 验证数据完整性
@@ -328,10 +366,11 @@ python nmpc_tracking/identified_model_nmpc_test.py --model 3 --trajectory 3 --ad
 每个模型都有对应的配置文件，位于 `config/` 目录：
 
 - `model1_config.json`：模型1的参数配置
-- `model2_config.json`：模型2的参数配置  
+- `model2_config.json`：模型2的参数配置
 - `model3_config.json`：模型3的参数配置
 
 配置文件包含：
+
 - 模型参数初值
 - NMPC控制器参数
 - 仿真设置
@@ -374,14 +413,11 @@ python nmpc_tracking/identified_model_nmpc_test.py --model 3 --trajectory 3 --ad
 
 ## 🔮 未来工作
 
-- **实物验证**: 将当前仿真成果拿出来应用于实物平台，进行跑点、路径跟踪或任务轨迹的实验验证。
+- **强化实物验证**: 进一步验证当前仿真成果拿出来应用于实物平台，进行跑点、路径跟踪或任务轨迹的实验验证。
 - **算法增强**: 实现更多先进的辨识算法（如遗传算法、粒子群优化）和控制算法。
 - **在线辨识与自适应控制**: 开发在线参数辨识功能，结合自适应控制策略，提高系统对环境变化的鲁棒性。
 - **图形用户界面 (GUI)**: 开发一个用户友好的图形界面，简化操作流程，提高易用性。
 - **代码优化**: 进一步优化代码，提高计算效率，特别是在嵌入式系统上的实时性能。
 
 ## 📖 相关文档
-
-- [使用示例](examples/usage_examples.md) - 详细的使用示例和最佳实践
-- [NMPC参数传递使用说明](NMPC_参数传递使用说明.md) - NMPC轨迹跟踪控制传参验证详细说明
 - [English README](README.md) - English version of this document

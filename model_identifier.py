@@ -22,7 +22,7 @@ from src.simulation_visualization.visualizer import Visualizer
 
 # Import unified data format and simplified visualization modules
 from src.utils.data_format import UnifiedDataFormat, DataExporter
-from src.utils.simplified_visualizer import SimplifiedVisualizer
+# SimplifiedVisualizer will be imported locally when needed for supplementary metrics
 
 def parse_arguments():
     """
@@ -186,26 +186,6 @@ def validate_data_file(file_path):
         print(f"Error: Cannot read data file '{file_path}': {str(e)}")
         return False
 
-def save_parameters(params, model_type, output_dir='.'):
-    """
-    Save identified parameters to JSON file
-
-    Args:
-        params (np.ndarray): Identified parameters
-        model_type (str): Model type (model_1, model_2, model_3)
-        output_dir (str): Output directory
-    """
-    import os
-    params_list = params.tolist()
-    filename = os.path.join(output_dir, f"{model_type}_params.json")
-    
-    # Ensure output directory exists
-    os.makedirs(output_dir, exist_ok=True)
-    
-    with open(filename, 'w') as f:
-        json.dump(params_list, f, indent=4)
-    print(f"Parameters saved to {filename}")
-
 def main():
     """
     Main function that integrates all modules and runs the system
@@ -288,9 +268,6 @@ def main():
     
     # Print model equations
     optimizer.print_model_equations()
-
-    # Save parameters
-    save_parameters(estimated_params, model_type, output_dir)
     
     # 4. Simulation
     print("4. Simulation...")
@@ -315,11 +292,7 @@ def main():
         reference_trajectory=np.column_stack([x, y]),
         errors=np.column_stack([x_sim - x, y_sim - y]),
         filepath=os.path.join(output_dir, f"{model_type}_results.csv")
-    )
-    
-    # 保存CSV文件
-    csv_filename = os.path.join(output_dir, f"{model_type}_identification_results.csv")
-    data_format.save_to_csv(simulation_data, csv_filename)
+    )    
     
     # 保存元数据
     metadata = {
@@ -339,38 +312,130 @@ def main():
     metadata_filename = os.path.join(output_dir, f"{model_type}_identification_metadata.json")
     data_format.save_metadata(metadata, metadata_filename)
     
-    # Use simplified visualization
-    visualizer = SimplifiedVisualizer()
+    # Extract data for visualization (using correct column names from DataExporter)
+    time_data = simulation_data['Time']  # 标准列名是'Time'
+    u_data = u  # 使用原始数据
+    v_data = v
+    r_data = r
+    psi_data = psi
+    x_data = x
+    y_data = y
+    Ts_data = Ts
+    Tp_data = Tp
+    u_sim_data = u_sim  # 使用仿真结果
+    v_sim_data = v_sim
+    r_sim_data = r_sim
+    psi_sim_data = psi_sim
+    x_sim_data = x_sim
+    y_sim_data = y_sim
     
-    # Plot key parameters
-    fig1 = visualizer.plot_key_parameters(simulation_data)
-    fig1.suptitle(f'{model_names[model_type]} - Parameter Identification Results', fontsize=16)
+    # Calculate derivatives for visualization
+    du = np.gradient(u_data, time_data)
+    dv = np.gradient(v_data, time_data)
+    dr = np.gradient(r_data, time_data)
+    du_est = np.gradient(u_sim_data, time_data)
+    dv_est = np.gradient(v_sim_data, time_data)
+    dr_est = np.gradient(r_sim_data, time_data)
     
-    # Generate performance report
-    fig2, performance_metrics = visualizer.plot_performance_summary(simulation_data, model_names[model_type])
-    fig2.suptitle(f'{model_names[model_type]} - Performance Analysis', fontsize=16)
+    # Create visualizer with focus on tracking performance and state comparison
+    visualizer = Visualizer(time_data, u_data, v_data, r_data, psi_data, x_data, y_data, Ts_data, Tp_data,
+                           u_sim_data, v_sim_data, r_sim_data, psi_sim_data, x_sim_data, y_sim_data,
+                           du, dv, dr, du_est, dv_est, dr_est)
     
-    # Save plots
-    plot1_filename = os.path.join(output_dir, f"{model_type}_identification_results.png")
-    plot2_filename = os.path.join(output_dir, f"{model_type}_performance_analysis.png")
+    # Plot state variables comparison (main focus)
+    fig1 = plt.figure(figsize=(12, 10))
+    plt.subplot(4, 1, 1)
+    plt.plot(time_data, u_data, label='True u', linewidth=2)
+    plt.plot(time_data, u_sim_data, '--', label='Estimated u', linewidth=2)
+    plt.legend()
+    plt.title('u: True vs Estimated')
+    plt.ylabel('u (m/s)')
+    plt.grid(True)
+
+    plt.subplot(4, 1, 2)
+    plt.plot(time_data, v_data, label='True v', linewidth=2)
+    plt.plot(time_data, v_sim_data, '--', label='Estimated v', linewidth=2)
+    plt.legend()
+    plt.title('v: True vs Estimated')
+    plt.ylabel('v (m/s)')
+    plt.grid(True)
+
+    plt.subplot(4, 1, 3)
+    plt.plot(time_data, r_data, label='True r', linewidth=2)
+    plt.plot(time_data, r_sim_data, '--', label='Estimated r', linewidth=2)
+    plt.legend()
+    plt.title('r: True vs Estimated')
+    plt.ylabel('r (rad/s)')
+    plt.grid(True)
+
+    plt.subplot(4, 1, 4)
+    plt.plot(time_data, np.degrees(psi_data), label='True psi', linewidth=2)
+    plt.plot(time_data, np.degrees(psi_sim_data), '--', label='Estimated psi', linewidth=2)
+    plt.legend()
+    plt.title('psi: True vs Estimated')
+    plt.ylabel('psi (degrees)')
+    plt.xlabel('Time (s)')
+    plt.grid(True)
+    
+    plt.tight_layout()
+    fig1.suptitle(f'{model_names[model_type]} - State Variables Tracking Performance', fontsize=16, y=0.98)
+    
+    # Plot trajectory comparison with NED coordinate system (North-East-Down)
+    fig2 = plt.figure(figsize=(10, 10))
+    plt.plot(y_data, x_data, label='True Trajectory', linewidth=2)  # y为东向(East), x为北向(North)
+    plt.plot(y_sim_data, x_sim_data, '--', label='Estimated Trajectory', linewidth=2)
+    plt.xlabel('East (m)')
+    plt.ylabel('North (m)')
+    plt.legend()
+    plt.title(f'{model_names[model_type]} - Trajectory Tracking Performance (NED Coordinate System)')
+    plt.grid(True)
+    plt.axis('equal')
+    plt.tight_layout()
+    
+    # Plot control inputs
+    fig3 = plt.figure(figsize=(12, 6))
+    plt.subplot(2, 1, 1)
+    plt.plot(time_data, Ts_data, label='Right Propeller (Ts)', color='blue', linewidth=2)
+    plt.legend()
+    plt.title('Right Propeller Output')
+    plt.ylabel('PWM Value (Ts)')
+    plt.grid(True)
+
+    plt.subplot(2, 1, 2)
+    plt.plot(time_data, Tp_data, label='Left Propeller (Tp)', color='red', linewidth=2)
+    plt.legend()
+    plt.title('Left Propeller Output')
+    plt.ylabel('PWM Value (Tp)')
+    plt.xlabel('Time (s)')
+    plt.grid(True)
+    
+    plt.tight_layout()
+    fig3.suptitle(f'{model_names[model_type]} - Control Input Analysis', fontsize=16, y=0.98)
+    
+    # Plot performance metrics as supplementary information
+    from src.utils.simplified_visualizer import SimplifiedVisualizer
+    simple_viz = SimplifiedVisualizer()
+    fig4, performance_metrics = simple_viz.plot_performance_summary(simulation_data, model_names[model_type])
+    fig4.suptitle(f'{model_names[model_type]} - Performance Metrics (Supplementary)', fontsize=16)
+    
+    # Save plots with descriptive names
+    plot1_filename = os.path.join(output_dir, f"{model_type}_state_variables_tracking.png")
+    plot2_filename = os.path.join(output_dir, f"{model_type}_trajectory_tracking_ned.png")
+    plot3_filename = os.path.join(output_dir, f"{model_type}_control_inputs.png")
+    plot4_filename = os.path.join(output_dir, f"{model_type}_performance_metrics.png")
+    
     fig1.savefig(plot1_filename, dpi=300, bbox_inches='tight')
     fig2.savefig(plot2_filename, dpi=300, bbox_inches='tight')
+    fig3.savefig(plot3_filename, dpi=300, bbox_inches='tight')
+    fig4.savefig(plot4_filename, dpi=300, bbox_inches='tight')
+    
+    print(f"Plots saved:")
+    print(f"  - State variables: {plot1_filename}")
+    print(f"  - Trajectory (NED): {plot2_filename}")
+    print(f"  - Control inputs: {plot3_filename}")
+    print(f"  - Performance metrics: {plot4_filename}")
     
     plt.show()
-    
-    # Print performance metrics
-    print(f"\n=== Performance Metrics ===")
-    print(f"u direction RMSE: {metadata['performance_metrics']['rmse_u']:.6f}")
-    print(f"v direction RMSE: {metadata['performance_metrics']['rmse_v']:.6f}")
-    print(f"r direction RMSE: {metadata['performance_metrics']['rmse_r']:.6f}")
-    
-    print(f"\n=== Output Files ===")
-    print(f"Parameter file: {os.path.join(output_dir, f'{model_type}_params.json')}")
-    print(f"Result data: {csv_filename}")
-    print(f"Metadata: {metadata_filename}")
-    print(f"Result plot: {plot1_filename}")
-    print(f"Performance plot: {plot2_filename}")
-    
     print("\nShip model identification completed!")
 
 if __name__ == "__main__":

@@ -17,7 +17,7 @@ df = pd.read_excel('datas/boat1_2_sin.xlsx').iloc[Start_row:Start_row+row]
 timestamp = df['DateTime'].values
 x = df['x'].values
 y = df['y'].values
-psi = df['course'].values
+psi = df['Heading'].values
 Ts = df['PWM_R'].values-1500
 Tp = df['PWM_L'].values-1500
 
