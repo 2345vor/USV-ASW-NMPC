@@ -187,6 +187,25 @@ The `model_results` directory contains typical outputs:
 | Model 2 | ![Model 2](model_results/model_2_trajectory_tracking_ned.png)  | ![Perf 2](model_results/model_2_performance_metrics.png) |
 | Model 3 | ![Model 3](model_results/model_3_trajectory_tracking_ned.png)  | ![Perf 3](model_results/model_3_performance_metrics.png) |
 
+Run comparative analyses using example scripts:
+- `python examples/model_tracking_comparison.py`
+![Model Tracking Comparison](model_results/model_tracking_comparison.png)
+- `python examples/models_heatmap_comparison.py`
+![Models Parameter Heatmap Comparison](model_results/models_heatmap_comparison.png)
+
+You can also enable single-model heatmap in the script:
+```python
+# Plot comparison heatmap of three models
+print("\nPlotting comparison heatmap of three models...")
+# visualizer.plot_models_heatmap_comparison()
+
+# You can also plot each model's heatmap individually
+# visualizer.plot_single_model_heatmap(model_type=1)
+visualizer.plot_single_model_heatmap(model_type=2)
+# visualizer.plot_single_model_heatmap(model_type=3)
+```
+![Model 2 Parameters Heatmap](model_results/model_2_params_heatmap.png)
+
 ### Workflow
 
 1. Data loading: read from Excel files
@@ -258,6 +277,16 @@ python identified_model_nmpc_test.py --model 2 --trajectory 2 --cycle_time 316
 # Model 3 + Double-sine + Adaptive
 python identified_model_nmpc_test.py --model 2 --trajectory 3 --cycle_time 317
 ```
+
+#### Supported Models and Trajectories
+- Model Category:
+  - Model 1: Base (18 parameters)
+  - Model 2: Separated (21 parameters)
+  - Model 3: Simplified (16 parameters)
+- Tracking Curves:
+  - Trajectory 1: Ellipse `x = 40*sin(t) + 1, y = 30*cos(t) + 1`
+  - Trajectory 2: Sine `x = 40*sin(t) + 1, y = 10*t`
+  - Trajectory 3: Lissajous `x = 25*cos(2*t + 1.7), y = 25*sin(t + 1.7)`
 
 #### Outputs and Analysis
 
